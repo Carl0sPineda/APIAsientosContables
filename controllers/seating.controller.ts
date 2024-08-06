@@ -8,17 +8,30 @@ const getAllSeatings = async (
   next: NextFunction
 ) => {
   try {
+    const { _page, _limit } = req.query;
+    const page = parseInt(_page as string) || 1;
+    const limit = parseInt(_limit as string) || 10;
+
+    const offset = (page - 1) * limit;
+
     const seatings = await prisma.seating.findMany({
       include: {
         category: true,
       },
+      take: limit,
+      skip: offset,
       orderBy: {
         category: {
           name: "asc",
         },
       },
     });
-    res.status(200).json(seatings);
+
+    const totalCount = await prisma.seating.count();
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.status(200).json({ totalPages, seatings });
   } catch (error: any) {
     handleResponse(res, 500, error.message);
   }
