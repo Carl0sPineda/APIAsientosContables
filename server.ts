@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import express, { Request, Response } from "express";
 import morgan from "morgan";
+import cors from "cors";
 import categoryRoute from "./routes/category.route";
 import seatingRoute from "./routes/seating.route";
 
@@ -10,6 +11,7 @@ const app = express();
 async function main() {
   // Middleware
   app.use(morgan("dev"));
+  app.use(cors());
   app.use(express.json());
   app.disable("x-powered-by");
 
