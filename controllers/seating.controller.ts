@@ -75,7 +75,38 @@ const createSeating = async (
   }
 };
 
+const deleteSeating = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const product = await prisma.seating.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) {
+      return handleResponse(res, 404, "Seating not found");
+    }
+
+    await prisma.seating.delete({
+      where: {
+        id,
+      },
+    });
+
+    res.status(200).json({ message: "Seating deleted successfully" });
+  } catch (error: any) {
+    handleResponse(res, 500, error.message);
+  }
+};
+
 export default {
   createSeating,
   getAllSeatings,
+  deleteSeating,
 };

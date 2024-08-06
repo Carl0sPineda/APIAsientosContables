@@ -8,13 +8,13 @@ datasource db {
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
+  id       String    @id @default(uuid())
   name     String    @unique
   seatings Seating[]
 }
 
 model Seating {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid())
   description String
   debit       Decimal?
   credit      Decimal?
@@ -22,6 +22,6 @@ model Seating {
   date        DateTime
   numDoc      String
   asn         String
-  categoryId  Int
+  categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
 }
