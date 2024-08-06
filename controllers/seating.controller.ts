@@ -75,6 +75,54 @@ const createSeating = async (
   }
 };
 
+const updateSeating = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const {
+      description,
+      debit,
+      credit,
+      detail,
+      date,
+      numDoc,
+      asn,
+      categoryId,
+    } = req.body;
+
+    const seating = await prisma.seating.findUnique({
+      where: { id },
+    });
+
+    if (!seating) {
+      return handleResponse(res, 404, "Seating not found");
+    }
+
+    const updatedSeating = await prisma.seating.update({
+      where: { id },
+      data: {
+        description,
+        debit,
+        credit,
+        detail,
+        date,
+        numDoc,
+        asn,
+        category: {
+          connect: { id: categoryId },
+        },
+      },
+    });
+
+    res.status(200).json(updatedSeating);
+  } catch (error: any) {
+    handleResponse(res, 500, error.message);
+  }
+};
+
 const deleteSeating = async (
   req: Request,
   res: Response,
@@ -108,5 +156,6 @@ const deleteSeating = async (
 export default {
   createSeating,
   getAllSeatings,
+  updateSeating,
   deleteSeating,
 };
