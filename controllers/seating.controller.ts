@@ -153,9 +153,69 @@ const deleteSeating = async (
   }
 };
 
+const getTotalsByCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { categoryId, month, year } = req.query;
+
+    if (!categoryId || !month || !year) {
+      return res
+        .status(400)
+        .json({ message: "Category ID, month, and year are required" });
+    }
+
+    const monthNumber = parseInt(month as string, 10);
+    const yearNumber = parseInt(year as string, 10);
+
+    if (isNaN(monthNumber) || isNaN(yearNumber)) {
+      return res.status(400).json({ message: "Invalid month or year format" });
+    }
+
+    // Consultar el total de `credit` y `debit` para la categoría especificada
+    const totals = await prisma.seating.aggregate({
+      _sum: {
+        debit: true,
+        credit: true,
+      },
+      where: {
+        categoryId: categoryId as string,
+        date: {
+          gte: new Date(yearNumber, monthNumber - 1, 1), // Primer día del mes
+          lt: new Date(yearNumber, monthNumber, 1), // Primer día del siguiente mes
+        },
+      },
+    });
+
+    // Convertir Decimal a número
+    const debitTotal = totals._sum.debit
+      ? parseFloat(totals._sum.debit.toString())
+      : 0;
+    const creditTotal = totals._sum.credit
+      ? parseFloat(totals._sum.credit.toString())
+      : 0;
+
+    // Calcular el total de debit + credit
+    const total = debitTotal + creditTotal;
+
+    res.status(200).json({
+      _sum: {
+        debit: debitTotal.toString(), // Convertir a cadena para consistencia
+        credit: creditTotal.toString(), // Convertir a cadena para consistencia
+      },
+      total: total.toString(), // Convertir el total a cadena para consistencia
+    });
+  } catch (error: any) {
+    next(error);
+  }
+};
+
 export default {
   createSeating,
   getAllSeatings,
+  getTotalsByCategory,
   updateSeating,
   deleteSeating,
 };
