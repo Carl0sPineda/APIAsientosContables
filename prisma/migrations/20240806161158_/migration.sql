@@ -8,8 +8,8 @@ CREATE TABLE "Category" (
 CREATE TABLE "Seating" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "description" TEXT NOT NULL,
-    "debit" DECIMAL NOT NULL,
-    "credit" DECIMAL NOT NULL,
+    "debit" DECIMAL,
+    "credit" DECIMAL,
     "detail" TEXT NOT NULL,
     "date" DATETIME NOT NULL,
     "numDoc" TEXT NOT NULL,

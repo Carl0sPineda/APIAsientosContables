@@ -16,8 +16,8 @@ model Category {
 model Seating {
   id          Int      @id @default(autoincrement())
   description String
-  debit       Decimal
-  credit      Decimal
+  debit       Decimal?
+  credit      Decimal?
   detail      String
   date        DateTime
   numDoc      String
