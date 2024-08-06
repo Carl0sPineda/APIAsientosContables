@@ -12,6 +12,11 @@ const getAllSeatings = async (
       include: {
         category: true,
       },
+      orderBy: {
+        category: {
+          name: "asc",
+        },
+      },
     });
     res.status(200).json(seatings);
   } catch (error: any) {
