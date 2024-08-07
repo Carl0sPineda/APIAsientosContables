@@ -39,7 +39,11 @@ const getAllCategories = async (
   next: NextFunction
 ) => {
   try {
-    const categories = await prisma.category.findMany();
+    const categories = await prisma.category.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
     res.status(200).json(categories);
   } catch (error: any) {
     handleResponse(res, 500, error.message);
