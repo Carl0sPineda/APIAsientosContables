@@ -9,6 +9,17 @@ const createCategory = async (
 ) => {
   try {
     const { name } = req.body;
+
+    const existingUser = await prisma.category.findUnique({ where: { name } });
+
+    if (existingUser) {
+      return handleResponse(
+        res,
+        409,
+        "Category already exists, please use another category"
+      );
+    }
+
     const post = await prisma.category.create({
       data: {
         name,
