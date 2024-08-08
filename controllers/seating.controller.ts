@@ -189,6 +189,20 @@ const getTotalsByCategory = async (
       },
     });
 
+    // Consultar los asientos relacionados para la categoría, mes y año especificados, incluyendo la categoría
+    const seatings = await prisma.seating.findMany({
+      where: {
+        categoryId: categoryId as string,
+        date: {
+          gte: new Date(yearNumber, monthNumber - 1, 1),
+          lt: new Date(yearNumber, monthNumber, 1),
+        },
+      },
+      include: {
+        category: true, // Incluir la categoría en la consulta
+      },
+    });
+
     // Convertir Decimal a número
     const debitTotal = totals._sum.debit
       ? parseFloat(totals._sum.debit.toString())
@@ -206,6 +220,7 @@ const getTotalsByCategory = async (
         credit: creditTotal.toString(), // Convertir a cadena para consistencia
       },
       total: total.toString(), // Convertir el total a cadena para consistencia
+      seatings, // Array de los asientos relacionados, con información de la categoría incluida
     });
   } catch (error: any) {
     next(error);
